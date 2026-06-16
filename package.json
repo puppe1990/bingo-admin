@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "ci": "npm run format:check && npm run lint && npm test && npm run build",
-    "promote-admin": "tsx scripts/promote-admin.ts"
+    "promote-admin": "tsx scripts/promote-admin.ts",
+    "favicon": "node scripts/generate-favicon.mjs"
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",
