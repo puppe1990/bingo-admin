@@ -11,6 +11,8 @@ import {
   extendSubscription,
   listUsers,
   listClients,
+  getUserAccess,
+  updateUserAccess,
   requireAdmin,
   ForbiddenError,
   UnauthorizedError,
@@ -30,6 +32,7 @@ async function seedUser(
     email,
     emailVerified: true,
     role,
+    isActive: false,
     createdAt: now,
     updatedAt: now,
   });
@@ -182,7 +185,6 @@ describe('subscriptions.server', () => {
       const expiresAt = new Date('2027-06-14T00:00:00Z');
       const id = await createSubscription(db, {
         userId: 'u2',
-        plan: 'pro',
         expiresAt,
       });
 
@@ -194,15 +196,13 @@ describe('subscriptions.server', () => {
   });
 
   describe('updateSubscription', () => {
-    it('updates plan and notes', async () => {
+    it('updates notes', async () => {
       await updateSubscription(db, 'sub-active', {
-        plan: 'platinum',
         notes: 'Cliente VIP',
       });
 
       const result = await listSubscriptions(db, { search: 'maria@test', now });
       const updated = result.find((s) => s.id === 'sub-active');
-      expect(updated?.plan).toBe('platinum');
       expect(updated?.notes).toBe('Cliente VIP');
     });
   });
@@ -249,6 +249,25 @@ describe('subscriptions.server', () => {
     it('does not include admin users', async () => {
       const clients = await listClients(db, { now });
       expect(clients.some((c) => c.email === 'admin@test.com')).toBe(false);
+    });
+  });
+
+  describe('user access admin', () => {
+    it('updates isActive and accessExpiresAt', async () => {
+      const expires = new Date('2026-12-31');
+      await updateUserAccess(db, 'u1', { isActive: true, accessExpiresAt: expires });
+      const access = await getUserAccess(db, 'u1', now);
+      expect(access.isActive).toBe(true);
+      expect(access.accessExpiresAt).toEqual(expires);
+      expect(access.effectiveStatus).toBe('active');
+      expect(access.canAccess).toBe(true);
+    });
+
+    it('defaults new users to inactive', async () => {
+      await seedUser(db, 'u-new', 'new@test.com', 'Novo');
+      const access = await getUserAccess(db, 'u-new', now);
+      expect(access.isActive).toBe(false);
+      expect(access.canAccess).toBe(false);
     });
   });
 

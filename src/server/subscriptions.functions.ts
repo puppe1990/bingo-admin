@@ -11,6 +11,8 @@ import {
   extendSubscription,
   listUsers,
   listClients,
+  getUserAccess,
+  updateUserAccess,
   listSubscriptions as listSubscriptionsQuery,
 } from './subscriptions.server';
 
@@ -28,7 +30,6 @@ export const listSubscriptionsFn = createServerFn({ method: 'GET' })
     z
       .object({
         status: z.enum(['active', 'expired', 'cancelled']).optional(),
-        plan: z.enum(['free', 'pro', 'platinum']).optional(),
         expiresBefore: z.string().optional(),
         expiresAfter: z.string().optional(),
         search: z.string().optional(),
@@ -42,7 +43,6 @@ export const listSubscriptionsFn = createServerFn({ method: 'GET' })
     const db = await adminDb();
     return listSubscriptions(db, {
       status: data?.status,
-      plan: data?.plan,
       expiresBefore: data?.expiresBefore ? new Date(data.expiresBefore) : undefined,
       expiresAfter: data?.expiresAfter ? new Date(data.expiresAfter) : undefined,
       search: data?.search,
@@ -85,7 +85,6 @@ export const createSubscriptionFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
       userId: z.string(),
-      plan: z.enum(['free', 'pro', 'platinum']),
       expiresAt: z.string(),
       notes: z.string().optional(),
     }),
@@ -96,7 +95,6 @@ export const createSubscriptionFn = createServerFn({ method: 'POST' })
     const db = await adminDb();
     return createSubscription(db, {
       userId: data.userId,
-      plan: data.plan,
       expiresAt: new Date(data.expiresAt),
       notes: data.notes,
     });
@@ -106,7 +104,6 @@ export const updateSubscriptionFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
       id: z.string(),
-      plan: z.enum(['free', 'pro', 'platinum']).optional(),
       status: z.enum(['active', 'expired', 'cancelled']).optional(),
       expiresAt: z.string().optional(),
       notes: z.string().optional(),
@@ -117,7 +114,6 @@ export const updateSubscriptionFn = createServerFn({ method: 'POST' })
     requireAdmin(session);
     const db = await adminDb();
     await updateSubscription(db, data.id, {
-      plan: data.plan,
       status: data.status,
       expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
       notes: data.notes,
@@ -132,6 +128,34 @@ export const extendSubscriptionFn = createServerFn({ method: 'POST' })
     requireAdmin(session);
     const db = await adminDb();
     await extendSubscription(db, data.id, data.days);
+    return { ok: true };
+  });
+
+export const getUserAccessFn = createServerFn({ method: 'GET' })
+  .inputValidator(z.object({ userId: z.string() }))
+  .handler(async ({ data }) => {
+    const session = await adminSession();
+    requireAdmin(session);
+    const db = await adminDb();
+    return getUserAccess(db, data.userId);
+  });
+
+export const updateUserAccessFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      userId: z.string(),
+      isActive: z.boolean(),
+      accessExpiresAt: z.string().nullable(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const session = await adminSession();
+    requireAdmin(session);
+    const db = await adminDb();
+    await updateUserAccess(db, data.userId, {
+      isActive: data.isActive,
+      accessExpiresAt: data.accessExpiresAt ? new Date(data.accessExpiresAt) : null,
+    });
     return { ok: true };
   });
 

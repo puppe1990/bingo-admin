@@ -2,7 +2,8 @@ import type { SQL } from 'drizzle-orm';
 import { and, asc, desc, eq, gte, like, lte, ne, or, sql } from 'drizzle-orm';
 import type { AppDatabase } from '../lib/db/index';
 import { subscriptions, user } from '../lib/db/schema';
-import type { SubscriptionPlan, SubscriptionStatus } from '../lib/db/types';
+import { resolveUserAccess } from '../../shared/user-access';
+import type { SubscriptionPlan, SubscriptionStatus, UserAccessStatus } from '../lib/db/types';
 
 export class UnauthorizedError extends Error {
   constructor() {
@@ -198,13 +199,13 @@ export async function getSubscriptionStats(
 
 export async function createSubscription(
   db: AppDatabase,
-  input: { userId: string; plan: SubscriptionPlan; expiresAt: Date; notes?: string },
+  input: { userId: string; expiresAt: Date; notes?: string },
 ): Promise<string> {
   const id = crypto.randomUUID();
   await db.insert(subscriptions).values({
     id,
     userId: input.userId,
-    plan: input.plan,
+    plan: 'pro',
     status: 'active',
     expiresAt: input.expiresAt,
     notes: input.notes,
@@ -265,13 +266,89 @@ export async function extendSubscription(
   await updateSubscription(db, id, { expiresAt: newExpiresAt, status: 'active' });
 }
 
+export type UserAccessView = {
+  userId: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+  accessExpiresAt: Date | null;
+  effectiveStatus: UserAccessStatus;
+  canAccess: boolean;
+};
+
+export async function getUserAccess(
+  db: AppDatabase,
+  userId: string,
+  now: Date = new Date(),
+): Promise<UserAccessView> {
+  const rows = await db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isActive: user.isActive,
+      accessExpiresAt: user.accessExpiresAt,
+    })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  if (rows.length === 0) {
+    throw new NotFoundError('User not found');
+  }
+
+  const row = rows[0]!;
+  const resolved = resolveUserAccess(
+    { isActive: row.isActive, accessExpiresAt: row.accessExpiresAt },
+    now,
+  );
+
+  return {
+    userId: row.id,
+    name: row.name,
+    email: row.email,
+    isActive: row.isActive,
+    accessExpiresAt: row.accessExpiresAt,
+    ...resolved,
+  };
+}
+
+export async function updateUserAccess(
+  db: AppDatabase,
+  userId: string,
+  input: { isActive: boolean; accessExpiresAt: Date | null },
+): Promise<void> {
+  const existing = await db
+    .select({ id: user.id })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  if (existing.length === 0) {
+    throw new NotFoundError('User not found');
+  }
+
+  await db
+    .update(user)
+    .set({
+      isActive: input.isActive,
+      accessExpiresAt: input.accessExpiresAt,
+      updatedAt: new Date(),
+    })
+    .where(eq(user.id, userId));
+}
+
 export type ClientListItem = {
   id: string;
   name: string;
   email: string;
   createdAt: Date;
+  isActive: boolean;
+  accessExpiresAt: Date | null;
+  effectiveStatus: UserAccessStatus;
+  canAccess: boolean;
   plan: SubscriptionPlan | null;
-  effectiveStatus: SubscriptionStatus | null;
+  subscriptionEffectiveStatus: SubscriptionStatus | null;
   expiresAt: Date | null;
   daysRemaining: number | null;
   hasSubscription: boolean;
@@ -296,6 +373,8 @@ export async function listClients(
       name: user.name,
       email: user.email,
       createdAt: user.createdAt,
+      isActive: user.isActive,
+      accessExpiresAt: user.accessExpiresAt,
     })
     .from(user)
     .where(and(...conditions))
@@ -310,13 +389,21 @@ export async function listClients(
 
   return users.map((row) => {
     const sub = subscriptionsByUser.get(row.id);
+    const access = resolveUserAccess(
+      { isActive: row.isActive, accessExpiresAt: row.accessExpiresAt },
+      now,
+    );
     return {
       id: row.id,
       name: row.name,
       email: row.email,
       createdAt: row.createdAt,
+      isActive: row.isActive,
+      accessExpiresAt: row.accessExpiresAt,
+      effectiveStatus: access.effectiveStatus,
+      canAccess: access.canAccess,
       plan: sub?.plan ?? null,
-      effectiveStatus: sub?.effectiveStatus ?? null,
+      subscriptionEffectiveStatus: sub?.effectiveStatus ?? null,
       expiresAt: sub?.expiresAt ?? null,
       daysRemaining: sub?.daysRemaining ?? null,
       hasSubscription: Boolean(sub),
