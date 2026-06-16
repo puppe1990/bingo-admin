@@ -229,7 +229,7 @@ describe('subscriptions.server', () => {
       await seedUser(db, 'u3', 'sem-plano@test.com', 'Sem Plano');
 
       const clients = await listClients(db, { now });
-      expect(clients).toHaveLength(3);
+      expect(clients).toHaveLength(4);
 
       const withoutPlan = clients.find((c) => c.email === 'sem-plano@test.com');
       expect(withoutPlan).toMatchObject({
@@ -239,9 +239,10 @@ describe('subscriptions.server', () => {
       });
     });
 
-    it('does not include admin users', async () => {
+    it('includes admin users', async () => {
       const clients = await listClients(db, { now });
-      expect(clients.some((c) => c.email === 'admin@test.com')).toBe(false);
+      const admin = clients.find((c) => c.email === 'admin@test.com');
+      expect(admin).toMatchObject({ name: 'Admin', role: 'admin' });
     });
   });
 

@@ -46,7 +46,14 @@ export function ClientsList({ items, loading }: ClientsListProps) {
             {items.map((item) => (
               <tr key={item.id} className="border-t border-indigo-50 hover:bg-yellow-50/50">
                 <td className="p-4">
-                  <p className="font-black text-indigo-900">{item.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-black text-indigo-900">{item.name}</p>
+                    {item.role === 'admin' && (
+                      <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-700">
+                        Admin
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-indigo-400 font-medium">{item.email}</p>
                 </td>
                 <td className="p-4 font-bold text-indigo-600 text-sm">

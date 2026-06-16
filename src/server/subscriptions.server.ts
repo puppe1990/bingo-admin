@@ -3,7 +3,12 @@ import { and, asc, desc, eq, gte, like, lte, ne, or, sql } from 'drizzle-orm';
 import type { AppDatabase } from '../lib/db/index';
 import { subscriptions, user } from '../lib/db/schema';
 import { resolveUserAccess } from '../../shared/user-access';
-import type { SubscriptionPlan, SubscriptionStatus, UserAccessStatus } from '../lib/db/types';
+import type {
+  SubscriptionPlan,
+  SubscriptionStatus,
+  UserAccessStatus,
+  UserRole,
+} from '../lib/db/types';
 
 export class UnauthorizedError extends Error {
   constructor() {
@@ -338,6 +343,7 @@ export type ClientListItem = {
   id: string;
   name: string;
   email: string;
+  role: UserRole;
   createdAt: Date;
   isActive: boolean;
   accessExpiresAt: Date | null;
@@ -356,7 +362,7 @@ export async function listClients(
   filters: { search?: string; now?: Date } = {},
 ): Promise<ClientListItem[]> {
   const now = filters.now ?? new Date();
-  const conditions: SQL[] = [ne(user.role, 'admin')];
+  const conditions: SQL[] = [];
 
   if (filters.search?.trim()) {
     const term = `%${filters.search.trim()}%`;
@@ -368,12 +374,13 @@ export async function listClients(
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
       createdAt: user.createdAt,
       isActive: user.isActive,
       accessExpiresAt: user.accessExpiresAt,
     })
     .from(user)
-    .where(and(...conditions))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(user.createdAt));
 
   const subscriptionsByUser = new Map<string, SubscriptionListItem>();
@@ -393,6 +400,7 @@ export async function listClients(
       id: row.id,
       name: row.name,
       email: row.email,
+      role: row.role as UserRole,
       createdAt: row.createdAt,
       isActive: row.isActive,
       accessExpiresAt: row.accessExpiresAt,
