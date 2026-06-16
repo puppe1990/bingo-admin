@@ -106,7 +106,7 @@ export function AdminLayout({ children, userName, onLogout }: AdminLayoutProps) 
           className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${isActive('/assinaturas') || location.pathname.startsWith('/assinaturas') ? 'text-amber-400' : 'text-indigo-300'}`}
         >
           <CreditCard className="w-6 h-6" />
-          <span className="text-[10px] font-black uppercase">Planos</span>
+          <span className="text-[10px] font-black uppercase">Assinaturas</span>
         </Link>
       </nav>
 
