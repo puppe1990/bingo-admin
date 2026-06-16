@@ -14,7 +14,6 @@ type EditSubscriptionPageProps = {
 export function EditSubscriptionPage({ subscriptionId }: EditSubscriptionPageProps) {
   const navigate = useNavigate();
   const [item, setItem] = useState<SubscriptionListItem | null>(null);
-  const [plan, setPlan] = useState<'free' | 'pro' | 'platinum'>('pro');
   const [status, setStatus] = useState<'active' | 'expired' | 'cancelled'>('active');
   const [expiresAt, setExpiresAt] = useState('');
   const [notes, setNotes] = useState('');
@@ -26,7 +25,6 @@ export function EditSubscriptionPage({ subscriptionId }: EditSubscriptionPagePro
     getSubscriptionFn({ data: { id: subscriptionId } })
       .then((data) => {
         setItem(data);
-        setPlan(data.plan);
         setStatus(data.effectiveStatus);
         setExpiresAt(data.expiresAt.toISOString().slice(0, 10));
         setNotes(data.notes ?? '');
@@ -41,7 +39,7 @@ export function EditSubscriptionPage({ subscriptionId }: EditSubscriptionPagePro
     setError('');
     try {
       await updateSubscriptionFn({
-        data: { id: subscriptionId, plan, status, expiresAt, notes },
+        data: { id: subscriptionId, status, expiresAt, notes },
       });
       navigate({ to: '/assinaturas' });
     } catch {
@@ -92,35 +90,19 @@ export function EditSubscriptionPage({ subscriptionId }: EditSubscriptionPagePro
           <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold">{error}</div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2">
-              Plano
-            </label>
-            <select
-              value={plan}
-              onChange={(e) => setPlan(e.target.value as typeof plan)}
-              className="w-full px-6 py-4 bg-indigo-50 rounded-2xl font-bold text-indigo-900 outline-none"
-            >
-              <option value="free">Gratuito</option>
-              <option value="pro">Pro</option>
-              <option value="platinum">Platinum</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2">
-              Status
-            </label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as typeof status)}
-              className="w-full px-6 py-4 bg-indigo-50 rounded-2xl font-bold text-indigo-900 outline-none"
-            >
-              <option value="active">Ativa</option>
-              <option value="expired">Expirada</option>
-              <option value="cancelled">Cancelada</option>
-            </select>
-          </div>
+        <div>
+          <label className="block text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2">
+            Status
+          </label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as typeof status)}
+            className="w-full px-6 py-4 bg-indigo-50 rounded-2xl font-bold text-indigo-900 outline-none"
+          >
+            <option value="active">Ativa</option>
+            <option value="expired">Expirada</option>
+            <option value="cancelled">Cancelada</option>
+          </select>
         </div>
 
         <div>

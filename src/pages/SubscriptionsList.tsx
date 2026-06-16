@@ -1,11 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import {
-  formatStatusLabel,
-  getExpirationBadgeClass,
-  formatPlanLabel,
-} from '../lib/ui/subscription-badges';
+import { formatStatusLabel, getExpirationBadgeClass } from '../lib/ui/subscription-badges';
 import type { SubscriptionListItem } from '../server/subscriptions.server';
 
 type SubscriptionsListProps = {
@@ -37,7 +33,6 @@ export function SubscriptionsList({ items, loading }: SubscriptionsListProps) {
           <thead className="bg-indigo-50 text-[10px] font-black uppercase tracking-widest text-indigo-400">
             <tr>
               <th className="p-4">Usuário</th>
-              <th className="p-4">Plano</th>
               <th className="p-4">Status</th>
               <th className="p-4">Expira em</th>
               <th className="p-4">Dias</th>
@@ -51,7 +46,6 @@ export function SubscriptionsList({ items, loading }: SubscriptionsListProps) {
                   <p className="font-black text-indigo-900">{item.userName}</p>
                   <p className="text-sm text-indigo-400 font-medium">{item.userEmail}</p>
                 </td>
-                <td className="p-4 font-bold text-indigo-700">{formatPlanLabel(item.plan)}</td>
                 <td className="p-4">
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getExpirationBadgeClass(item.effectiveStatus, item.daysRemaining)}`}

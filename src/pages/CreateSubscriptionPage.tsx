@@ -8,7 +8,6 @@ export function CreateSubscriptionPage() {
   const [search, setSearch] = useState(prefill.email ?? '');
   const [users, setUsers] = useState<Awaited<ReturnType<typeof listUsersFn>>>([]);
   const [userId, setUserId] = useState(prefill.userId ?? '');
-  const [plan, setPlan] = useState<'free' | 'pro' | 'platinum'>('pro');
   const [expiresAt, setExpiresAt] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +35,7 @@ export function CreateSubscriptionPage() {
     setError('');
     try {
       await createSubscriptionFn({
-        data: { userId, plan, expiresAt, notes: notes || undefined },
+        data: { userId, expiresAt, notes: notes || undefined },
       });
       navigate({ to: '/assinaturas' });
     } catch {
@@ -49,7 +48,7 @@ export function CreateSubscriptionPage() {
     <div className="max-w-2xl space-y-8">
       <div>
         <h1 className="text-4xl font-black text-indigo-900 uppercase">Nova Assinatura</h1>
-        <p className="text-indigo-600 font-medium">Vincule um plano a um usuário.</p>
+        <p className="text-indigo-600 font-medium">Vincule uma assinatura a um usuário.</p>
       </div>
 
       <form
@@ -91,21 +90,6 @@ export function CreateSubscriptionPage() {
               ))}
             </div>
           )}
-        </div>
-
-        <div>
-          <label className="block text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2">
-            Plano
-          </label>
-          <select
-            value={plan}
-            onChange={(e) => setPlan(e.target.value as typeof plan)}
-            className="w-full px-6 py-4 bg-indigo-50 rounded-2xl font-bold text-indigo-900 outline-none"
-          >
-            <option value="free">Gratuito</option>
-            <option value="pro">Pro</option>
-            <option value="platinum">Platinum</option>
-          </select>
         </div>
 
         <div>
