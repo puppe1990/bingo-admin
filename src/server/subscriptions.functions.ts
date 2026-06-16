@@ -10,6 +10,7 @@ import {
   updateSubscription,
   extendSubscription,
   listUsers,
+  listClients,
   listSubscriptions as listSubscriptionsQuery,
 } from './subscriptions.server';
 
@@ -56,13 +57,28 @@ export const getSubscriptionStatsFn = createServerFn({ method: 'GET' }).handler(
   return getSubscriptionStats(db);
 });
 
-export const listUsersFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ search: z.string() }))
+export const listClientsFn = createServerFn({ method: 'GET' })
+  .inputValidator(
+    z
+      .object({
+        search: z.string().optional(),
+      })
+      .optional(),
+  )
   .handler(async ({ data }) => {
     const session = await adminSession();
     requireAdmin(session);
     const db = await adminDb();
-    return listUsers(db, data.search);
+    return listClients(db, { search: data?.search });
+  });
+
+export const listUsersFn = createServerFn({ method: 'GET' })
+  .inputValidator(z.object({ search: z.string().optional() }).optional())
+  .handler(async ({ data }) => {
+    const session = await adminSession();
+    requireAdmin(session);
+    const db = await adminDb();
+    return listUsers(db, data?.search);
   });
 
 export const createSubscriptionFn = createServerFn({ method: 'POST' })

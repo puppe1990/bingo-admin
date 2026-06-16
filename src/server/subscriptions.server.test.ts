@@ -10,6 +10,7 @@ import {
   updateSubscription,
   extendSubscription,
   listUsers,
+  listClients,
   requireAdmin,
   ForbiddenError,
   UnauthorizedError,
@@ -221,6 +222,33 @@ describe('subscriptions.server', () => {
       const users = await listUsers(db, 'maria');
       expect(users).toHaveLength(1);
       expect(users[0]?.email).toBe('maria@test.com');
+    });
+
+    it('lists non-admin users without search', async () => {
+      const users = await listUsers(db);
+      expect(users).toHaveLength(2);
+      expect(users.every((u) => u.role !== 'admin')).toBe(true);
+    });
+  });
+
+  describe('listClients', () => {
+    it('lists all registered users including those without subscriptions', async () => {
+      await seedUser(db, 'u3', 'sem-plano@test.com', 'Sem Plano');
+
+      const clients = await listClients(db, { now });
+      expect(clients).toHaveLength(3);
+
+      const withoutPlan = clients.find((c) => c.email === 'sem-plano@test.com');
+      expect(withoutPlan).toMatchObject({
+        name: 'Sem Plano',
+        hasSubscription: false,
+        plan: null,
+      });
+    });
+
+    it('does not include admin users', async () => {
+      const clients = await listClients(db, { now });
+      expect(clients.some((c) => c.email === 'admin@test.com')).toBe(false);
     });
   });
 

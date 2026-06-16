@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { BrandMark } from '../lib/ui/brand-mark';
-import { LayoutDashboard, CreditCard, LogOut } from 'lucide-react';
+import { LayoutDashboard, CreditCard, LogOut, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type AdminLayoutProps = {
@@ -40,6 +40,17 @@ export function AdminLayout({ children, userName, onLogout }: AdminLayoutProps) 
           >
             <LayoutDashboard className="w-5 h-5 text-amber-400" />
             Dashboard
+          </Link>
+          <Link
+            to="/clientes"
+            className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+              isActive('/clientes') || location.pathname.startsWith('/clientes')
+                ? 'bg-indigo-700/50 border-l-4 border-amber-400 font-bold'
+                : 'hover:bg-indigo-700/30 text-indigo-100'
+            }`}
+          >
+            <Users className="w-5 h-5 text-amber-400" />
+            Clientes
           </Link>
           <Link
             to="/assinaturas"
@@ -82,6 +93,13 @@ export function AdminLayout({ children, userName, onLogout }: AdminLayoutProps) 
         >
           <LayoutDashboard className="w-6 h-6" />
           <span className="text-[10px] font-black uppercase">Início</span>
+        </Link>
+        <Link
+          to="/clientes"
+          className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${isActive('/clientes') || location.pathname.startsWith('/clientes') ? 'text-amber-400' : 'text-indigo-300'}`}
+        >
+          <Users className="w-6 h-6" />
+          <span className="text-[10px] font-black uppercase">Clientes</span>
         </Link>
         <Link
           to="/assinaturas"

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './app/__root'
 import { Route as LoginRouteImport } from './app/login'
 import { Route as AdminRouteImport } from './app/_admin'
 import { Route as AdminIndexRouteImport } from './app/_admin/index'
+import { Route as AdminClientesIndexRouteImport } from './app/_admin/clientes/index'
 import { Route as AdminAssinaturasIndexRouteImport } from './app/_admin/assinaturas/index'
 import { Route as ApiAuthSplatRouteImport } from './app/api/auth/$'
 import { Route as AdminAssinaturasNovaRouteImport } from './app/_admin/assinaturas/nova'
@@ -29,6 +30,11 @@ const AdminRoute = AdminRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClientesIndexRoute = AdminClientesIndexRouteImport.update({
+  id: '/clientes/',
+  path: '/clientes/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminAssinaturasIndexRoute = AdminAssinaturasIndexRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/assinaturas/nova': typeof AdminAssinaturasNovaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/assinaturas/': typeof AdminAssinaturasIndexRoute
+  '/clientes/': typeof AdminClientesIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/assinaturas/nova': typeof AdminAssinaturasNovaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/assinaturas': typeof AdminAssinaturasIndexRoute
+  '/clientes': typeof AdminClientesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/_admin/assinaturas/nova': typeof AdminAssinaturasNovaRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_admin/assinaturas/': typeof AdminAssinaturasIndexRoute
+  '/_admin/clientes/': typeof AdminClientesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/assinaturas/nova'
     | '/api/auth/$'
     | '/assinaturas/'
+    | '/clientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/assinaturas/nova'
     | '/api/auth/$'
     | '/assinaturas'
+    | '/clientes'
   id:
     | '__root__'
     | '/_admin'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/_admin/assinaturas/nova'
     | '/api/auth/$'
     | '/_admin/assinaturas/'
+    | '/_admin/clientes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,6 +145,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/clientes/': {
+      id: '/_admin/clientes/'
+      path: '/clientes'
+      fullPath: '/clientes/'
+      preLoaderRoute: typeof AdminClientesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_admin/assinaturas/': {
@@ -171,6 +190,7 @@ interface AdminRouteChildren {
   AdminAssinaturasIdRoute: typeof AdminAssinaturasIdRoute
   AdminAssinaturasNovaRoute: typeof AdminAssinaturasNovaRoute
   AdminAssinaturasIndexRoute: typeof AdminAssinaturasIndexRoute
+  AdminClientesIndexRoute: typeof AdminClientesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -178,6 +198,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAssinaturasIdRoute: AdminAssinaturasIdRoute,
   AdminAssinaturasNovaRoute: AdminAssinaturasNovaRoute,
   AdminAssinaturasIndexRoute: AdminAssinaturasIndexRoute,
+  AdminClientesIndexRoute: AdminClientesIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

@@ -1,12 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { createSubscriptionFn, listUsersFn } from '../server/subscriptions.functions';
 
 export function CreateSubscriptionPage() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
+  const prefill = useSearch({ from: '/_admin/assinaturas/nova' });
+  const [search, setSearch] = useState(prefill.email ?? '');
   const [users, setUsers] = useState<Awaited<ReturnType<typeof listUsersFn>>>([]);
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState(prefill.userId ?? '');
   const [plan, setPlan] = useState<'free' | 'pro' | 'platinum'>('pro');
   const [expiresAt, setExpiresAt] = useState('');
   const [notes, setNotes] = useState('');
@@ -14,11 +15,9 @@ export function CreateSubscriptionPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (search.length < 2) {
-      setUsers([]);
-      return;
-    }
-    listUsersFn({ data: { search } }).then(setUsers).catch(console.error);
+    listUsersFn({ data: { search: search.length >= 2 ? search : undefined } })
+      .then(setUsers)
+      .catch(console.error);
   }, [search]);
 
   const addDays = (days: number) => {

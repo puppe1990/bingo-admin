@@ -1,5 +1,5 @@
 import type { SQL } from 'drizzle-orm';
-import { and, asc, desc, eq, gte, like, lte, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, like, lte, ne, or, sql } from 'drizzle-orm';
 import type { AppDatabase } from '../lib/db/index';
 import { subscriptions, user } from '../lib/db/schema';
 import type { SubscriptionPlan, SubscriptionStatus } from '../lib/db/types';
@@ -265,8 +265,74 @@ export async function extendSubscription(
   await updateSubscription(db, id, { expiresAt: newExpiresAt, status: 'active' });
 }
 
-export async function listUsers(db: AppDatabase, search: string) {
-  const term = `%${search}%`;
+export type ClientListItem = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  plan: SubscriptionPlan | null;
+  effectiveStatus: SubscriptionStatus | null;
+  expiresAt: Date | null;
+  daysRemaining: number | null;
+  hasSubscription: boolean;
+  subscriptionId: string | null;
+};
+
+export async function listClients(
+  db: AppDatabase,
+  filters: { search?: string; now?: Date } = {},
+): Promise<ClientListItem[]> {
+  const now = filters.now ?? new Date();
+  const conditions: SQL[] = [ne(user.role, 'admin')];
+
+  if (filters.search?.trim()) {
+    const term = `%${filters.search.trim()}%`;
+    conditions.push(or(like(user.email, term), like(user.name, term))!);
+  }
+
+  const users = await db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+    })
+    .from(user)
+    .where(and(...conditions))
+    .orderBy(desc(user.createdAt));
+
+  const subscriptionsByUser = new Map<string, SubscriptionListItem>();
+  for (const sub of await listSubscriptions(db, { now, search: filters.search })) {
+    if (!subscriptionsByUser.has(sub.userId)) {
+      subscriptionsByUser.set(sub.userId, sub);
+    }
+  }
+
+  return users.map((row) => {
+    const sub = subscriptionsByUser.get(row.id);
+    return {
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      createdAt: row.createdAt,
+      plan: sub?.plan ?? null,
+      effectiveStatus: sub?.effectiveStatus ?? null,
+      expiresAt: sub?.expiresAt ?? null,
+      daysRemaining: sub?.daysRemaining ?? null,
+      hasSubscription: Boolean(sub),
+      subscriptionId: sub?.id ?? null,
+    };
+  });
+}
+
+export async function listUsers(db: AppDatabase, search?: string) {
+  const conditions: SQL[] = [ne(user.role, 'admin')];
+
+  if (search?.trim()) {
+    const term = `%${search.trim()}%`;
+    conditions.push(or(like(user.email, term), like(user.name, term))!);
+  }
+
   return db
     .select({
       id: user.id,
@@ -275,8 +341,9 @@ export async function listUsers(db: AppDatabase, search: string) {
       role: user.role,
     })
     .from(user)
-    .where(or(like(user.email, term), like(user.name, term)))
-    .limit(20);
+    .where(and(...conditions))
+    .orderBy(desc(user.createdAt))
+    .limit(50);
 }
 
 export async function getUserSubscription(db: AppDatabase, userId: string, now: Date = new Date()) {
