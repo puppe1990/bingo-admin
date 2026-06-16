@@ -15,7 +15,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'shared/**/*.test.ts'],
     env: {
       BETTER_AUTH_URL: 'http://localhost:3002',
       BETTER_AUTH_SECRET: 'test-secret-key-at-least-32-chars-long',
