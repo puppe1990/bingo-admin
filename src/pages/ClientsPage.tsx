@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
-import { listClientsFn } from '../server/subscriptions.functions';
-import type { ClientListItem } from '../server/subscriptions.server';
+import { listClientsFn } from '../server/clients.functions';
+import type { ClientListItem } from '../server/clients.server';
 import { ClientsList } from './ClientsList';
 
 export function ClientsPage() {
@@ -28,7 +28,7 @@ export function ClientsPage() {
       <div>
         <h1 className="text-4xl font-black text-indigo-900 uppercase">Clientes</h1>
         <p className="text-indigo-600 font-medium">
-          Todos os usuários cadastrados no Bingo Fácil, com ou sem assinatura.
+          Todos os usuários cadastrados. Ative ou desative o acesso individualmente.
         </p>
       </div>
 

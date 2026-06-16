@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { getUserAccessFn, updateUserAccessFn } from '../server/subscriptions.functions';
-import type { UserAccessView } from '../server/subscriptions.server';
+import { getUserAccessFn, updateUserAccessFn } from '../server/clients.functions';
+import type { UserAccessView } from '../server/clients.server';
 import { formatUserAccessLabel, getUserAccessBadgeClass } from '../lib/ui/user-access-badges';
 
 type EditClientPageProps = {
