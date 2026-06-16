@@ -96,4 +96,30 @@ export async function migrateClient(libsql: Client): Promise<void> {
   if (!hasRole) {
     await libsql.execute(`ALTER TABLE user ADD COLUMN role TEXT NOT NULL DEFAULT 'user'`);
   }
+
+  const hasIsActive = userColumns.rows.some((row) => row.name === 'is_active');
+  if (!hasIsActive) {
+    await libsql.execute(`ALTER TABLE user ADD COLUMN is_active INTEGER NOT NULL DEFAULT 0`);
+  }
+  const hasAccessExpiresAt = userColumns.rows.some((row) => row.name === 'access_expires_at');
+  if (!hasAccessExpiresAt) {
+    await libsql.execute(`ALTER TABLE user ADD COLUMN access_expires_at INTEGER`);
+  }
+
+  // Backfill: usuários com assinatura ativa viram ativos com a data da assinatura
+  await libsql.execute(`
+    UPDATE user
+    SET is_active = 1,
+        access_expires_at = (
+          SELECT MAX(s.expires_at)
+          FROM subscriptions s
+          WHERE s.user_id = user.id
+            AND s.status = 'active'
+        )
+    WHERE role != 'admin'
+      AND EXISTS (
+        SELECT 1 FROM subscriptions s
+        WHERE s.user_id = user.id AND s.status = 'active'
+      )
+  `);
 }

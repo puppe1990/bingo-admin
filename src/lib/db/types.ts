@@ -9,3 +9,4 @@ export interface BingoCard {
 export type UserRole = 'user' | 'admin';
 export type SubscriptionPlan = 'free' | 'pro' | 'platinum';
 export type SubscriptionStatus = 'active' | 'expired' | 'cancelled';
+export type UserAccessStatus = 'active' | 'inactive' | 'expired';
