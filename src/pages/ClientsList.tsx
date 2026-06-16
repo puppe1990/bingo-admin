@@ -1,11 +1,11 @@
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatStatusLabel, getExpirationBadgeClass } from '../lib/ui/subscription-badges';
 import {
-  formatPlanLabel,
-  formatStatusLabel,
-  getExpirationBadgeClass,
-} from '../lib/ui/subscription-badges';
+  formatUserAccessLabel,
+  getUserAccessBadgeClass,
+} from '../lib/ui/user-access-badges';
 import type { ClientListItem } from '../server/subscriptions.server';
 
 type ClientsListProps = {
@@ -38,7 +38,8 @@ export function ClientsList({ items, loading }: ClientsListProps) {
             <tr>
               <th className="p-4">Cliente</th>
               <th className="p-4">Cadastro</th>
-              <th className="p-4">Plano</th>
+              <th className="p-4">Acesso</th>
+              <th className="p-4">Válido até</th>
               <th className="p-4">Status</th>
               <th className="p-4">Expira em</th>
               <th className="p-4">Ações</th>
@@ -54,18 +55,27 @@ export function ClientsList({ items, loading }: ClientsListProps) {
                 <td className="p-4 font-bold text-indigo-600 text-sm">
                   {format(item.createdAt, 'dd/MM/yyyy', { locale: ptBR })}
                 </td>
+                <td className="p-4">
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getUserAccessBadgeClass(item.effectiveStatus)}`}
+                  >
+                    {formatUserAccessLabel(item.effectiveStatus)}
+                  </span>
+                </td>
                 <td className="p-4 font-bold text-indigo-700">
-                  {item.plan ? formatPlanLabel(item.plan) : '—'}
+                  {item.accessExpiresAt
+                    ? format(item.accessExpiresAt, 'dd/MM/yyyy', { locale: ptBR })
+                    : '—'}
                 </td>
                 <td className="p-4">
-                  {item.effectiveStatus ? (
+                  {item.subscriptionEffectiveStatus ? (
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getExpirationBadgeClass(item.effectiveStatus, item.daysRemaining ?? 0)}`}
+                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getExpirationBadgeClass(item.subscriptionEffectiveStatus, item.daysRemaining ?? 0)}`}
                     >
-                      {formatStatusLabel(item.effectiveStatus)}
+                      {formatStatusLabel(item.subscriptionEffectiveStatus)}
                     </span>
                   ) : (
-                    <span className="text-indigo-300 font-bold text-sm">Sem plano</span>
+                    <span className="text-indigo-300 font-bold text-sm">Sem assinatura</span>
                   )}
                 </td>
                 <td className="p-4 font-bold text-indigo-700">
@@ -74,23 +84,32 @@ export function ClientsList({ items, loading }: ClientsListProps) {
                     : '—'}
                 </td>
                 <td className="p-4">
-                  {item.subscriptionId ? (
+                  <div className="flex flex-col gap-1">
                     <Link
-                      to="/assinaturas/$id"
-                      params={{ id: item.subscriptionId }}
+                      to="/clientes/$id"
+                      params={{ id: item.id }}
                       className="text-sm font-black text-indigo-600 hover:text-amber-600 uppercase"
                     >
-                      Ver plano
+                      Gerenciar
                     </Link>
-                  ) : (
-                    <Link
-                      to="/assinaturas/nova"
-                      search={{ userId: item.id, email: item.email }}
-                      className="text-sm font-black text-emerald-600 hover:text-emerald-700 uppercase"
-                    >
-                      Criar plano
-                    </Link>
-                  )}
+                    {item.subscriptionId ? (
+                      <Link
+                        to="/assinaturas/$id"
+                        params={{ id: item.subscriptionId }}
+                        className="text-sm font-black text-indigo-400 hover:text-amber-600 uppercase"
+                      >
+                        Ver assinatura
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/assinaturas/nova"
+                        search={{ userId: item.id, email: item.email }}
+                        className="text-sm font-black text-emerald-600 hover:text-emerald-700 uppercase"
+                      >
+                        Criar assinatura
+                      </Link>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

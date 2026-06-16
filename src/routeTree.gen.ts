@@ -15,6 +15,7 @@ import { Route as AdminIndexRouteImport } from './app/_admin/index'
 import { Route as AdminClientesIndexRouteImport } from './app/_admin/clientes/index'
 import { Route as AdminAssinaturasIndexRouteImport } from './app/_admin/assinaturas/index'
 import { Route as ApiAuthSplatRouteImport } from './app/api/auth/$'
+import { Route as AdminClientesIdRouteImport } from './app/_admin/clientes/$id'
 import { Route as AdminAssinaturasNovaRouteImport } from './app/_admin/assinaturas/nova'
 import { Route as AdminAssinaturasIdRouteImport } from './app/_admin/assinaturas/$id'
 
@@ -47,6 +48,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminClientesIdRoute = AdminClientesIdRouteImport.update({
+  id: '/clientes/$id',
+  path: '/clientes/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAssinaturasNovaRoute = AdminAssinaturasNovaRouteImport.update({
   id: '/assinaturas/nova',
   path: '/assinaturas/nova',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/assinaturas/$id': typeof AdminAssinaturasIdRoute
   '/assinaturas/nova': typeof AdminAssinaturasNovaRoute
+  '/clientes/$id': typeof AdminClientesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/assinaturas/': typeof AdminAssinaturasIndexRoute
   '/clientes/': typeof AdminClientesIndexRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByTo {
   '/': typeof AdminIndexRoute
   '/assinaturas/$id': typeof AdminAssinaturasIdRoute
   '/assinaturas/nova': typeof AdminAssinaturasNovaRoute
+  '/clientes/$id': typeof AdminClientesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/assinaturas': typeof AdminAssinaturasIndexRoute
   '/clientes': typeof AdminClientesIndexRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/_admin/': typeof AdminIndexRoute
   '/_admin/assinaturas/$id': typeof AdminAssinaturasIdRoute
   '/_admin/assinaturas/nova': typeof AdminAssinaturasNovaRoute
+  '/_admin/clientes/$id': typeof AdminClientesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_admin/assinaturas/': typeof AdminAssinaturasIndexRoute
   '/_admin/clientes/': typeof AdminClientesIndexRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/assinaturas/$id'
     | '/assinaturas/nova'
+    | '/clientes/$id'
     | '/api/auth/$'
     | '/assinaturas/'
     | '/clientes/'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assinaturas/$id'
     | '/assinaturas/nova'
+    | '/clientes/$id'
     | '/api/auth/$'
     | '/assinaturas'
     | '/clientes'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/_admin/'
     | '/_admin/assinaturas/$id'
     | '/_admin/assinaturas/nova'
+    | '/_admin/clientes/$id'
     | '/api/auth/$'
     | '/_admin/assinaturas/'
     | '/_admin/clientes/'
@@ -168,6 +180,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_admin/clientes/$id': {
+      id: '/_admin/clientes/$id'
+      path: '/clientes/$id'
+      fullPath: '/clientes/$id'
+      preLoaderRoute: typeof AdminClientesIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/assinaturas/nova': {
       id: '/_admin/assinaturas/nova'
       path: '/assinaturas/nova'
@@ -189,6 +208,7 @@ interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAssinaturasIdRoute: typeof AdminAssinaturasIdRoute
   AdminAssinaturasNovaRoute: typeof AdminAssinaturasNovaRoute
+  AdminClientesIdRoute: typeof AdminClientesIdRoute
   AdminAssinaturasIndexRoute: typeof AdminAssinaturasIndexRoute
   AdminClientesIndexRoute: typeof AdminClientesIndexRoute
 }
@@ -197,6 +217,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminAssinaturasIdRoute: AdminAssinaturasIdRoute,
   AdminAssinaturasNovaRoute: AdminAssinaturasNovaRoute,
+  AdminClientesIdRoute: AdminClientesIdRoute,
   AdminAssinaturasIndexRoute: AdminAssinaturasIndexRoute,
   AdminClientesIndexRoute: AdminClientesIndexRoute,
 }
