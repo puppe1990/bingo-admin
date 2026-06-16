@@ -13,11 +13,8 @@ import { Route as LoginRouteImport } from './app/login'
 import { Route as AdminRouteImport } from './app/_admin'
 import { Route as AdminIndexRouteImport } from './app/_admin/index'
 import { Route as AdminClientesIndexRouteImport } from './app/_admin/clientes/index'
-import { Route as AdminAssinaturasIndexRouteImport } from './app/_admin/assinaturas/index'
 import { Route as ApiAuthSplatRouteImport } from './app/api/auth/$'
 import { Route as AdminClientesIdRouteImport } from './app/_admin/clientes/$id'
-import { Route as AdminAssinaturasNovaRouteImport } from './app/_admin/assinaturas/nova'
-import { Route as AdminAssinaturasIdRouteImport } from './app/_admin/assinaturas/$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -38,11 +35,6 @@ const AdminClientesIndexRoute = AdminClientesIndexRouteImport.update({
   path: '/clientes/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAssinaturasIndexRoute = AdminAssinaturasIndexRouteImport.update({
-  id: '/assinaturas/',
-  path: '/assinaturas/',
-  getParentRoute: () => AdminRoute,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -53,35 +45,19 @@ const AdminClientesIdRoute = AdminClientesIdRouteImport.update({
   path: '/clientes/$id',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAssinaturasNovaRoute = AdminAssinaturasNovaRouteImport.update({
-  id: '/assinaturas/nova',
-  path: '/assinaturas/nova',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAssinaturasIdRoute = AdminAssinaturasIdRouteImport.update({
-  id: '/assinaturas/$id',
-  path: '/assinaturas/$id',
-  getParentRoute: () => AdminRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AdminIndexRoute
   '/login': typeof LoginRoute
-  '/assinaturas/$id': typeof AdminAssinaturasIdRoute
-  '/assinaturas/nova': typeof AdminAssinaturasNovaRoute
   '/clientes/$id': typeof AdminClientesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/assinaturas/': typeof AdminAssinaturasIndexRoute
   '/clientes/': typeof AdminClientesIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/': typeof AdminIndexRoute
-  '/assinaturas/$id': typeof AdminAssinaturasIdRoute
-  '/assinaturas/nova': typeof AdminAssinaturasNovaRoute
   '/clientes/$id': typeof AdminClientesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/assinaturas': typeof AdminAssinaturasIndexRoute
   '/clientes': typeof AdminClientesIndexRoute
 }
 export interface FileRoutesById {
@@ -89,44 +65,22 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/_admin/': typeof AdminIndexRoute
-  '/_admin/assinaturas/$id': typeof AdminAssinaturasIdRoute
-  '/_admin/assinaturas/nova': typeof AdminAssinaturasNovaRoute
   '/_admin/clientes/$id': typeof AdminClientesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_admin/assinaturas/': typeof AdminAssinaturasIndexRoute
   '/_admin/clientes/': typeof AdminClientesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/login'
-    | '/assinaturas/$id'
-    | '/assinaturas/nova'
-    | '/clientes/$id'
-    | '/api/auth/$'
-    | '/assinaturas/'
-    | '/clientes/'
+  fullPaths: '/' | '/login' | '/clientes/$id' | '/api/auth/$' | '/clientes/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/login'
-    | '/'
-    | '/assinaturas/$id'
-    | '/assinaturas/nova'
-    | '/clientes/$id'
-    | '/api/auth/$'
-    | '/assinaturas'
-    | '/clientes'
+  to: '/login' | '/' | '/clientes/$id' | '/api/auth/$' | '/clientes'
   id:
     | '__root__'
     | '/_admin'
     | '/login'
     | '/_admin/'
-    | '/_admin/assinaturas/$id'
-    | '/_admin/assinaturas/nova'
     | '/_admin/clientes/$id'
     | '/api/auth/$'
-    | '/_admin/assinaturas/'
     | '/_admin/clientes/'
   fileRoutesById: FileRoutesById
 }
@@ -166,13 +120,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/_admin/assinaturas/': {
-      id: '/_admin/assinaturas/'
-      path: '/assinaturas'
-      fullPath: '/assinaturas/'
-      preLoaderRoute: typeof AdminAssinaturasIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -187,38 +134,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesIdRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/_admin/assinaturas/nova': {
-      id: '/_admin/assinaturas/nova'
-      path: '/assinaturas/nova'
-      fullPath: '/assinaturas/nova'
-      preLoaderRoute: typeof AdminAssinaturasNovaRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/_admin/assinaturas/$id': {
-      id: '/_admin/assinaturas/$id'
-      path: '/assinaturas/$id'
-      fullPath: '/assinaturas/$id'
-      preLoaderRoute: typeof AdminAssinaturasIdRouteImport
-      parentRoute: typeof AdminRoute
-    }
   }
 }
 
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminAssinaturasIdRoute: typeof AdminAssinaturasIdRoute
-  AdminAssinaturasNovaRoute: typeof AdminAssinaturasNovaRoute
   AdminClientesIdRoute: typeof AdminClientesIdRoute
-  AdminAssinaturasIndexRoute: typeof AdminAssinaturasIndexRoute
   AdminClientesIndexRoute: typeof AdminClientesIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
-  AdminAssinaturasIdRoute: AdminAssinaturasIdRoute,
-  AdminAssinaturasNovaRoute: AdminAssinaturasNovaRoute,
   AdminClientesIdRoute: AdminClientesIdRoute,
-  AdminAssinaturasIndexRoute: AdminAssinaturasIndexRoute,
   AdminClientesIndexRoute: AdminClientesIndexRoute,
 }
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { BrandMark } from '../lib/ui/brand-mark';
-import { LayoutDashboard, CreditCard, LogOut, Users } from 'lucide-react';
+import { LayoutDashboard, LogOut, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type AdminLayoutProps = {
@@ -52,17 +52,6 @@ export function AdminLayout({ children, userName, onLogout }: AdminLayoutProps) 
             <Users className="w-5 h-5 text-amber-400" />
             Clientes
           </Link>
-          <Link
-            to="/assinaturas"
-            className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-              isActive('/assinaturas') || location.pathname.startsWith('/assinaturas')
-                ? 'bg-indigo-700/50 border-l-4 border-amber-400 font-bold'
-                : 'hover:bg-indigo-700/30 text-indigo-100'
-            }`}
-          >
-            <CreditCard className="w-5 h-5 text-amber-400" />
-            Assinaturas
-          </Link>
         </nav>
 
         <div className="p-6 bg-indigo-900 mt-auto">
@@ -72,7 +61,7 @@ export function AdminLayout({ children, userName, onLogout }: AdminLayoutProps) 
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-bold truncate leading-none">{userName}</p>
-              <p className="text-[10px] text-indigo-300 truncate mt-1">ADMIN • Assinaturas</p>
+              <p className="text-[10px] text-indigo-300 truncate mt-1">ADMIN • Acesso</p>
             </div>
           </div>
           <button
@@ -100,13 +89,6 @@ export function AdminLayout({ children, userName, onLogout }: AdminLayoutProps) 
         >
           <Users className="w-6 h-6" />
           <span className="text-[10px] font-black uppercase">Clientes</span>
-        </Link>
-        <Link
-          to="/assinaturas"
-          className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${isActive('/assinaturas') || location.pathname.startsWith('/assinaturas') ? 'text-amber-400' : 'text-indigo-300'}`}
-        >
-          <CreditCard className="w-6 h-6" />
-          <span className="text-[10px] font-black uppercase">Assinaturas</span>
         </Link>
       </nav>
 

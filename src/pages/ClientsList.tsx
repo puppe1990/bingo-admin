@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatUserAccessLabel, getUserAccessBadgeClass } from '../lib/ui/user-access-badges';
-import type { ClientListItem } from '../server/subscriptions.server';
+import type { ClientListItem } from '../server/clients.server';
 
 type ClientsListProps = {
   items: ClientListItem[];
@@ -36,7 +36,6 @@ export function ClientsList({ items, loading }: ClientsListProps) {
               <th className="p-4">Cadastro</th>
               <th className="p-4">Acesso</th>
               <th className="p-4">Válido até</th>
-              <th className="p-4">Expira em</th>
               <th className="p-4">Ações</th>
             </tr>
           </thead>
@@ -69,36 +68,14 @@ export function ClientsList({ items, loading }: ClientsListProps) {
                     ? format(item.accessExpiresAt, 'dd/MM/yyyy', { locale: ptBR })
                     : '—'}
                 </td>
-                <td className="p-4 font-bold text-indigo-700">
-                  {item.expiresAt ? format(item.expiresAt, 'dd/MM/yyyy', { locale: ptBR }) : '—'}
-                </td>
                 <td className="p-4">
-                  <div className="flex flex-col gap-1">
-                    <Link
-                      to="/clientes/$id"
-                      params={{ id: item.id }}
-                      className="text-sm font-black text-indigo-600 hover:text-amber-600 uppercase"
-                    >
-                      Gerenciar
-                    </Link>
-                    {item.subscriptionId ? (
-                      <Link
-                        to="/assinaturas/$id"
-                        params={{ id: item.subscriptionId }}
-                        className="text-sm font-black text-indigo-400 hover:text-amber-600 uppercase"
-                      >
-                        Ver assinatura
-                      </Link>
-                    ) : (
-                      <Link
-                        to="/assinaturas/nova"
-                        search={{ userId: item.id, email: item.email }}
-                        className="text-sm font-black text-emerald-600 hover:text-emerald-700 uppercase"
-                      >
-                        Criar assinatura
-                      </Link>
-                    )}
-                  </div>
+                  <Link
+                    to="/clientes/$id"
+                    params={{ id: item.id }}
+                    className="text-sm font-black text-indigo-600 hover:text-amber-600 uppercase"
+                  >
+                    Gerenciar
+                  </Link>
                 </td>
               </tr>
             ))}

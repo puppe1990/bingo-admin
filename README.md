@@ -1,6 +1,6 @@
 # Bingo Fácil — Admin
 
-Painel administrativo para gerenciar assinaturas do [Bingo Fácil](https://github.com/puppe1990/bingo-facil-turso). Compartilha o mesmo banco Turso em produção e o mesmo SQLite local do app principal no desenvolvimento.
+Painel administrativo para gerenciar o acesso dos usuários do [Bingo Fácil](https://github.com/puppe1990/bingo-facil-turso). Compartilha o mesmo banco Turso em produção e o mesmo SQLite local do app principal no desenvolvimento.
 
 **Produção:** https://bingo-facil-admin.netlify.app
 
@@ -15,9 +15,9 @@ Painel administrativo para gerenciar assinaturas do [Bingo Fácil](https://githu
 ## Funcionalidades
 
 - Login restrito a usuários com `role = admin`
-- Dashboard com estatísticas de assinaturas
-- Listagem com filtros por status e data de expiração
-- Criar, editar, estender e cancelar assinaturas
+- Dashboard com estatísticas de acesso (ativo / inativo / expirado)
+- Listagem de clientes com busca por nome ou e-mail
+- Ativar, desativar e definir data de validade do acesso
 - Script `promote-admin` para promover usuário a admin
 
 ## Rodar localmente
@@ -82,11 +82,10 @@ BETTER_AUTH_URL=https://bingo-facil-admin.netlify.app
 ## Rotas
 
 ```
-/login                       → login admin
-/                            → dashboard (protegido)
-/assinaturas                 → lista de assinaturas
-/assinaturas/nova            → criar assinatura
-/assinaturas/$id             → editar assinatura
+/login              → login admin
+/                   → dashboard de acesso (protegido)
+/clientes           → lista de usuários
+/clientes/$id       → ativar/desativar + data de validade
 ```
 
 ## Deploy (Netlify)
@@ -111,7 +110,7 @@ src/
   app/              → rotas TanStack Start
   lib/db/           → schema, migrations, conexão Turso/local
   lib/ui/           → componentes visuais compartilhados com o app principal
-  server/           → lógica de assinaturas + server functions
+  server/           → lógica de clientes e acesso + server functions
   pages/            → páginas do admin
 scripts/
   promote-admin.ts  → promove usuário a admin via Turso/SQLite
