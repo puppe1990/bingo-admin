@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+coverage
+.tanstack
+data
+package-lock.json
+src/routeTree.gen.ts
