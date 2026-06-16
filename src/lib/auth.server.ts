@@ -50,6 +50,18 @@ export async function getAuth() {
             defaultValue: 'user',
             input: false,
           },
+          isActive: {
+            type: 'boolean',
+            required: false,
+            defaultValue: false,
+            input: false,
+          },
+          accessExpiresAt: {
+            type: 'date',
+            required: false,
+            defaultValue: null,
+            input: false,
+          },
         },
       },
       trustedOrigins: getTrustedOrigins(baseURL),
