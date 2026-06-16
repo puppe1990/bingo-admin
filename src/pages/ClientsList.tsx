@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { formatStatusLabel, getExpirationBadgeClass } from '../lib/ui/subscription-badges';
 import { formatUserAccessLabel, getUserAccessBadgeClass } from '../lib/ui/user-access-badges';
 import type { ClientListItem } from '../server/subscriptions.server';
 
@@ -37,7 +36,6 @@ export function ClientsList({ items, loading }: ClientsListProps) {
               <th className="p-4">Cadastro</th>
               <th className="p-4">Acesso</th>
               <th className="p-4">Válido até</th>
-              <th className="p-4">Status</th>
               <th className="p-4">Expira em</th>
               <th className="p-4">Ações</th>
             </tr>
@@ -70,17 +68,6 @@ export function ClientsList({ items, loading }: ClientsListProps) {
                   {item.accessExpiresAt
                     ? format(item.accessExpiresAt, 'dd/MM/yyyy', { locale: ptBR })
                     : '—'}
-                </td>
-                <td className="p-4">
-                  {item.subscriptionEffectiveStatus ? (
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getExpirationBadgeClass(item.subscriptionEffectiveStatus, item.daysRemaining ?? 0)}`}
-                    >
-                      {formatStatusLabel(item.subscriptionEffectiveStatus)}
-                    </span>
-                  ) : (
-                    <span className="text-indigo-300 font-bold text-sm">Sem assinatura</span>
-                  )}
                 </td>
                 <td className="p-4 font-bold text-indigo-700">
                   {item.expiresAt ? format(item.expiresAt, 'dd/MM/yyyy', { locale: ptBR }) : '—'}
