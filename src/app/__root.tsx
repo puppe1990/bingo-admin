@@ -44,7 +44,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <link rel="shortcut icon" type="image/png" href="/favicon.png" />
         <HeadContent />
       </head>
-      <body className="bg-yellow-50 text-indigo-900 antialiased">{children}<Scripts /></body>
+      <body className="bg-yellow-50 text-indigo-900 antialiased">
+        {children}
+        <Scripts />
+      </body>
     </html>
   );
 }

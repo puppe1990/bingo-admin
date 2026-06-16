@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Ticket } from 'lucide-react';
 import { PasswordInput } from '@/src/components/PasswordInput';
-import { signIn, useSession } from '@/src/lib/auth-client';
+import { signIn, useSession, type SessionUser } from '@/src/lib/auth-client';
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ export function AdminLoginPage() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user?.role === 'admin') {
+    if ((session?.user as SessionUser | undefined)?.role === 'admin') {
       navigate({ to: '/' });
     }
   }, [session, navigate]);

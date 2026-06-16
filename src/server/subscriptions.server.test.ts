@@ -88,14 +88,7 @@ describe('subscriptions.server', () => {
       'active',
       new Date('2026-06-18T00:00:00Z'),
     );
-    await seedSubscription(
-      db,
-      'sub-past',
-      'u1',
-      'pro',
-      'active',
-      new Date('2026-05-01T00:00:00Z'),
-    );
+    await seedSubscription(db, 'sub-past', 'u1', 'pro', 'active', new Date('2026-05-01T00:00:00Z'));
     await seedSubscription(
       db,
       'sub-cancelled',
@@ -112,21 +105,21 @@ describe('subscriptions.server', () => {
 
   describe('resolveSubscriptionStatus', () => {
     it('marks active subscription with past expiresAt as expired', () => {
-      expect(
-        resolveSubscriptionStatus('active', new Date('2026-05-01T00:00:00Z'), now),
-      ).toBe('expired');
+      expect(resolveSubscriptionStatus('active', new Date('2026-05-01T00:00:00Z'), now)).toBe(
+        'expired',
+      );
     });
 
     it('keeps active subscription with future expiresAt as active', () => {
-      expect(
-        resolveSubscriptionStatus('active', new Date('2026-12-31T00:00:00Z'), now),
-      ).toBe('active');
+      expect(resolveSubscriptionStatus('active', new Date('2026-12-31T00:00:00Z'), now)).toBe(
+        'active',
+      );
     });
 
     it('keeps cancelled status regardless of date', () => {
-      expect(
-        resolveSubscriptionStatus('cancelled', new Date('2027-01-01T00:00:00Z'), now),
-      ).toBe('cancelled');
+      expect(resolveSubscriptionStatus('cancelled', new Date('2027-01-01T00:00:00Z'), now)).toBe(
+        'cancelled',
+      );
     });
   });
 

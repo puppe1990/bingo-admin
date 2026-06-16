@@ -125,7 +125,7 @@ export async function listSubscriptions(
   }
   if (filters.search) {
     const term = `%${filters.search}%`;
-    conditions.push(or(like(user.email, term), like(user.name, term)));
+    conditions.push(or(like(user.email, term), like(user.name, term))!);
   }
 
   const orderBy =
@@ -318,11 +318,7 @@ export async function updateUserAccess(
   userId: string,
   input: { isActive: boolean; accessExpiresAt: Date | null },
 ): Promise<void> {
-  const existing = await db
-    .select({ id: user.id })
-    .from(user)
-    .where(eq(user.id, userId))
-    .limit(1);
+  const existing = await db.select({ id: user.id }).from(user).where(eq(user.id, userId)).limit(1);
 
   if (existing.length === 0) {
     throw new NotFoundError('User not found');
@@ -448,11 +444,18 @@ export async function getUserSubscription(db: AppDatabase, userId: string, now: 
   const row = rows[0]!;
   return {
     ...row,
-    effectiveStatus: resolveSubscriptionStatus(row.status as SubscriptionStatus, row.expiresAt, now),
+    effectiveStatus: resolveSubscriptionStatus(
+      row.status as SubscriptionStatus,
+      row.expiresAt,
+      now,
+    ),
   };
 }
 
-export function getExpirationBadgeClass(effectiveStatus: SubscriptionStatus, daysRemaining: number) {
+export function getExpirationBadgeClass(
+  effectiveStatus: SubscriptionStatus,
+  daysRemaining: number,
+) {
   if (effectiveStatus === 'cancelled') {
     return 'bg-indigo-100 text-indigo-500';
   }

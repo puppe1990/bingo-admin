@@ -2,10 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatStatusLabel, getExpirationBadgeClass } from '../lib/ui/subscription-badges';
-import {
-  formatUserAccessLabel,
-  getUserAccessBadgeClass,
-} from '../lib/ui/user-access-badges';
+import { formatUserAccessLabel, getUserAccessBadgeClass } from '../lib/ui/user-access-badges';
 import type { ClientListItem } from '../server/subscriptions.server';
 
 type ClientsListProps = {
@@ -79,9 +76,7 @@ export function ClientsList({ items, loading }: ClientsListProps) {
                   )}
                 </td>
                 <td className="p-4 font-bold text-indigo-700">
-                  {item.expiresAt
-                    ? format(item.expiresAt, 'dd/MM/yyyy', { locale: ptBR })
-                    : '—'}
+                  {item.expiresAt ? format(item.expiresAt, 'dd/MM/yyyy', { locale: ptBR }) : '—'}
                 </td>
                 <td className="p-4">
                   <div className="flex flex-col gap-1">
