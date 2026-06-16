@@ -55,12 +55,11 @@ export function AdminDashboard() {
           <h1 className="text-4xl font-black text-indigo-900 leading-tight uppercase">
             Painel Admin
           </h1>
-          <p className="text-indigo-600 font-medium">
-            Gerencie assinaturas por data de expiração.
-          </p>
+          <p className="text-indigo-600 font-medium">Gerencie assinaturas por data de expiração.</p>
         </div>
         <Link
           to="/assinaturas/nova"
+          search={{ userId: undefined, email: undefined }}
           className="flex items-center gap-2 bg-emerald-500 text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-emerald-100 hover:bg-emerald-600 transition-all transform active:scale-95 uppercase text-sm"
         >
           <Plus className="w-5 h-5 font-black" />
@@ -80,9 +79,7 @@ export function AdminDashboard() {
                 {card.label}
               </p>
             </div>
-            <p className={`text-4xl font-black ${card.color}`}>
-              {loading ? '—' : card.value}
-            </p>
+            <p className={`text-4xl font-black ${card.color}`}>{loading ? '—' : card.value}</p>
           </div>
         ))}
       </div>
@@ -97,9 +94,7 @@ export function AdminDashboard() {
       )}
 
       <div>
-        <h2 className="text-2xl font-black text-indigo-900 uppercase mb-4">
-          Próximas a vencer
-        </h2>
+        <h2 className="text-2xl font-black text-indigo-900 uppercase mb-4">Próximas a vencer</h2>
         <SubscriptionsList items={upcoming} loading={loading} />
       </div>
     </div>

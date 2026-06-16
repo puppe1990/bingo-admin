@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Ticket } from 'lucide-react';
-import { signIn, useSession } from '@/src/lib/auth-client';
+import { PasswordInput } from '@/src/components/PasswordInput';
+import { signIn, useSession, type SessionUser } from '@/src/lib/auth-client';
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ export function AdminLoginPage() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user?.role === 'admin') {
+    if ((session?.user as SessionUser | undefined)?.role === 'admin') {
       navigate({ to: '/' });
     }
   }, [session, navigate]);
@@ -88,12 +89,10 @@ export function AdminLoginPage() {
                 <label className="block text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-2">
                   Senha
                 </label>
-                <input
-                  type="password"
+                <PasswordInput
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-6 py-4 bg-indigo-50 rounded-2xl font-bold text-indigo-900 outline-none"
                 />
               </div>
               <button

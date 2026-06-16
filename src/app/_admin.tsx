@@ -21,7 +21,12 @@ function AdminShell() {
   const { session } = Route.useRouteContext();
 
   return (
-    <AdminLayout userName={session.user.name} onLogout={async () => { await signOut(); }}>
+    <AdminLayout
+      userName={session.user.name}
+      onLogout={async () => {
+        await signOut();
+      }}
+    >
       <Outlet />
     </AdminLayout>
   );

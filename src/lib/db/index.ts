@@ -21,9 +21,7 @@ function resolveDatabaseConfig(): { url: string; authToken?: string } {
 
   if (isServerlessRuntime()) {
     if (!url || !process.env.TURSO_AUTH_TOKEN) {
-      throw new Error(
-        'Turso is required on Netlify. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN.',
-      );
+      throw new Error('Turso is required on Netlify. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN.');
     }
     return { url, authToken: process.env.TURSO_AUTH_TOKEN };
   }

@@ -11,6 +11,8 @@ import {
   extendSubscription,
   listUsers,
   listClients,
+  getUserAccess,
+  updateUserAccess,
   requireAdmin,
   ForbiddenError,
   UnauthorizedError,
@@ -30,6 +32,7 @@ async function seedUser(
     email,
     emailVerified: true,
     role,
+    isActive: false,
     createdAt: now,
     updatedAt: now,
   });
@@ -85,14 +88,7 @@ describe('subscriptions.server', () => {
       'active',
       new Date('2026-06-18T00:00:00Z'),
     );
-    await seedSubscription(
-      db,
-      'sub-past',
-      'u1',
-      'pro',
-      'active',
-      new Date('2026-05-01T00:00:00Z'),
-    );
+    await seedSubscription(db, 'sub-past', 'u1', 'pro', 'active', new Date('2026-05-01T00:00:00Z'));
     await seedSubscription(
       db,
       'sub-cancelled',
@@ -109,21 +105,21 @@ describe('subscriptions.server', () => {
 
   describe('resolveSubscriptionStatus', () => {
     it('marks active subscription with past expiresAt as expired', () => {
-      expect(
-        resolveSubscriptionStatus('active', new Date('2026-05-01T00:00:00Z'), now),
-      ).toBe('expired');
+      expect(resolveSubscriptionStatus('active', new Date('2026-05-01T00:00:00Z'), now)).toBe(
+        'expired',
+      );
     });
 
     it('keeps active subscription with future expiresAt as active', () => {
-      expect(
-        resolveSubscriptionStatus('active', new Date('2026-12-31T00:00:00Z'), now),
-      ).toBe('active');
+      expect(resolveSubscriptionStatus('active', new Date('2026-12-31T00:00:00Z'), now)).toBe(
+        'active',
+      );
     });
 
     it('keeps cancelled status regardless of date', () => {
-      expect(
-        resolveSubscriptionStatus('cancelled', new Date('2027-01-01T00:00:00Z'), now),
-      ).toBe('cancelled');
+      expect(resolveSubscriptionStatus('cancelled', new Date('2027-01-01T00:00:00Z'), now)).toBe(
+        'cancelled',
+      );
     });
   });
 
@@ -182,7 +178,6 @@ describe('subscriptions.server', () => {
       const expiresAt = new Date('2027-06-14T00:00:00Z');
       const id = await createSubscription(db, {
         userId: 'u2',
-        plan: 'pro',
         expiresAt,
       });
 
@@ -194,15 +189,13 @@ describe('subscriptions.server', () => {
   });
 
   describe('updateSubscription', () => {
-    it('updates plan and notes', async () => {
+    it('updates notes', async () => {
       await updateSubscription(db, 'sub-active', {
-        plan: 'platinum',
         notes: 'Cliente VIP',
       });
 
       const result = await listSubscriptions(db, { search: 'maria@test', now });
       const updated = result.find((s) => s.id === 'sub-active');
-      expect(updated?.plan).toBe('platinum');
       expect(updated?.notes).toBe('Cliente VIP');
     });
   });
@@ -249,6 +242,25 @@ describe('subscriptions.server', () => {
     it('does not include admin users', async () => {
       const clients = await listClients(db, { now });
       expect(clients.some((c) => c.email === 'admin@test.com')).toBe(false);
+    });
+  });
+
+  describe('user access admin', () => {
+    it('updates isActive and accessExpiresAt', async () => {
+      const expires = new Date('2026-12-31');
+      await updateUserAccess(db, 'u1', { isActive: true, accessExpiresAt: expires });
+      const access = await getUserAccess(db, 'u1', now);
+      expect(access.isActive).toBe(true);
+      expect(access.accessExpiresAt).toEqual(expires);
+      expect(access.effectiveStatus).toBe('active');
+      expect(access.canAccess).toBe(true);
+    });
+
+    it('defaults new users to inactive', async () => {
+      await seedUser(db, 'u-new', 'new@test.com', 'Novo');
+      const access = await getUserAccess(db, 'u-new', now);
+      expect(access.isActive).toBe(false);
+      expect(access.canAccess).toBe(false);
     });
   });
 

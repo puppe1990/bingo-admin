@@ -45,14 +45,14 @@ Login: http://localhost:3002/login
 
 ## Comandos
 
-| Comando | Propósito |
-| --- | --- |
-| `npm run dev` | Desenvolvimento (porta 3002) |
-| `npm run build` | Build de produção → `dist/` |
-| `npm start` | Servidor de produção |
-| `npm test` | Testes Vitest |
-| `npm run lint` | Verificação TypeScript |
-| `npm run ci` | format + lint + test + build |
+| Comando                 | Propósito                              |
+| ----------------------- | -------------------------------------- |
+| `npm run dev`           | Desenvolvimento (porta 3002)           |
+| `npm run build`         | Build de produção → `dist/`            |
+| `npm start`             | Servidor de produção                   |
+| `npm test`              | Testes Vitest                          |
+| `npm run lint`          | Verificação TypeScript                 |
+| `npm run ci`            | format + lint + test + build           |
 | `npm run promote-admin` | Promove `ADMIN_EMAIL` a admin no banco |
 
 ## Variáveis de ambiente
